@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <malloc.h>
+
+struct Stack
+{
+    int *list;
+    int tos, size;
+};
+
+// Stack Operations
+void Create(struct Stack *, int);
+void Push(struct Stack *, int);
+int Pop(struct Stack *);
+void Peek(struct Stack *);
+void Reverse(struct Stack *);
+
+int main()
+{
+    struct Stack stack;
+
+    Create(&stack, 4);
+
+    // Basic Operations
+//     Pop(&stack);
+    Push(&stack, 01);
+    Push(&stack, 02);
+    Push(&stack, 03);
+    Push(&stack, 04);
+	Push(&stack, 05);
+    Peek(&stack);
+    printf("Poped: %d\n", Pop(&stack));
+    printf("Poped: %d\n", Pop(&stack));
+    printf("Poped: %d\n", Pop(&stack));
+    printf("Poped: %d\n", Pop(&stack));
+    printf("Poped: %d\n", Pop(&stack));
+    // Peek(&stack);
+//    Reverse(&stack);
+//    Peek(&stack);
+
+    free(stack.list);
+    return 0;
+}
+
+void Create(struct Stack *stack, int size)
+{
+    stack->list = (int *)malloc(sizeof(int) * size);
+    stack->size = size;
+    stack->tos = -1;
+}
+
+void Push(struct Stack *stack, int data)
+{
+    if (stack->tos < stack->size - 1)
+    {
+        stack->list[++stack->tos] = data;
+        printf("Inserted: %d\n", stack->list[stack->tos]);
+    }
+    else
+    {
+        printf("Stack Overflow!\n");
+    }
+}
+
+int Pop(struct Stack *stack)
+{
+    if (stack->tos > -1)
+    {
+        return stack->list[stack->tos--];
+    }
+    else
+    {
+        printf("Stack Underflow!\n");
+    }
+    return 0;
+}
+
+void Reverse(struct Stack *stack)
+{
+    struct Stack rstack;
+
+    Create(&rstack, stack->size);
+
+    while (stack->tos > -1)
+    {
+        Push(&rstack, Pop(stack));
+    }
+    stack->list = rstack.list;
+    stack->tos = rstack.tos;
+}
+
+void Peek(struct Stack *stack)
+{
+    if (stack->tos != -1)
+    {
+        int i;
+        for (i = 0; i <= stack->tos; i++)
+        {
+            printf("[%d]", stack->list[i]);
+        }
+        printf("\n");
+    }
+    else
+    {
+        printf("Empty Stack!\n");
+    }
+}
