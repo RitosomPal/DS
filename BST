@@ -1,55 +1,128 @@
-#include<stdio.h> 
-#include<stdlib.h> 
+#include <stdio.h>
+#include <malloc.h>
 
-struct node 
-{ 
-    int key; 
-    struct node *left, *right; 
-}; 
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
 
-struct node *newNode(int item) 
-{ 
-    struct node *temp =  (struct node *)malloc(sizeof(struct node)); 
-    temp->key = item; 
-    temp->left = temp->right = NULL; 
-    return temp; 
-} 
+struct Node * Search(struct Node*, int);
+struct Node * Insert(struct Node*, int);
+struct Node * FindSmallestNode(struct Node*);
+struct Node * FindLargestNode(struct Node*);
+struct Node * DeleteNode(struct Node*, int);
+void PreOrder(struct Node*);
+void InOrder(struct Node*);
+void PostOrder(struct Node*);
 
-void inorder(struct node *root) 
-{ 
-    if (root != NULL) 
-    { 
-        inorder(root->left); 
-        printf("%d \n", root->key); 
-        inorder(root->right); 
-    } 
-} 
-
-struct node* insert(struct node* node, int key) 
-{ 
+int main() {
+    struct Node *root = NULL;
     
-    if (node == NULL) return newNode(key); 
+    root = Insert(root,45);
+    Insert(root,39);
+    Insert(root,56);
+    Insert(root,54);
+    Insert(root,78);
+    Insert(root,55);
+    Insert(root,80);
     
-    if (key < node->key) 
-        node->left  = insert(node->left, key); 
-    else if (key > node->key) 
-        node->right = insert(node->right, key);    
-        
-    return node; 
-} 
+    InOrder(root);
+    
+    if (Search(root, 39)) {
+        printf("\nSearch Found!");
+    } else {
+        printf("\nSearch Not Found!");
+    }
+    
+    root = DeleteNode(root, 56);
+    
+    InOrder(root);
+    
+    return 0;
+}
 
-int main() 
-{ 
-    
-    root = insert(root, 50); 
-    insert(root, 30); 
-    insert(root, 20); 
-    insert(root, 40); 
-    insert(root, 70); 
-    insert(root, 60); 
-    insert(root, 80); 
-    
-    inorder(root); 
-   
-    return 0; 
-} 
+struct Node * Search(struct Node *tree, int val) {
+    if (tree == NULL || tree->data == val) {
+        return tree;
+    } else {
+        if (val < tree->data) {
+            return Search(tree->left, val);
+        } else {
+            return Search(tree->right, val);
+        }
+    }
+}
+
+struct Node * Insert(struct Node *tree, int val) {
+    if (tree == NULL) {
+        tree = (struct Node*) malloc(sizeof(struct Node));
+        tree->data = val;
+        tree->left = tree->right = NULL;
+        return tree;
+    } else {
+        if (val < tree->data) {
+            tree->left = Insert(tree->left, val);
+        } else {
+            tree->right = Insert(tree->right, val);
+        }
+    }
+}
+
+struct Node * FindSmallestNode(struct Node* tree) {
+    struct Node* current = tree; 
+    while (current && current->left != NULL) 
+        current = current->left;
+    return current; 
+}
+
+struct Node * FindLargestNode(struct Node* tree) {
+    if (tree == NULL || tree->right == NULL) 
+        return tree;
+    return FindLargestNode(tree->right); 
+}
+
+struct Node * DeleteNode(struct Node *tree, int val) {
+    if (tree == NULL)
+        return tree;
+    else if (val < tree->data)
+        tree->left = DeleteNode(tree->left, val);
+    else if (val > tree->data)
+        tree->right = DeleteNode(tree->right, val);
+    else if (tree->left && tree->right) {
+        struct Node *temp = FindLargestNode(tree->left);
+        tree->data = temp->data;
+        DeleteNode(tree->left,temp->data);
+        return tree;
+    } else {
+        if (tree->left == NULL && tree->right == NULL)
+            return NULL;
+        else if (tree->left != NULL)
+            return tree->left;
+        else
+            return tree->right;
+    }
+}
+
+void PreOrder(struct Node *tree) {
+    if (tree != NULL) {
+        printf("[%d]",tree->data);
+        PreOrder(tree->left);
+        PreOrder(tree->right);
+    }
+}
+
+void InOrder(struct Node *tree) {
+    if (tree != NULL) {
+        InOrder(tree->left);
+        printf("[%d]",tree->data);
+        InOrder(tree->right);
+    }
+}
+
+void PostOrder(struct Node *tree) {
+    if (tree != NULL) {
+        PostOrder(tree->left);
+        PostOrder(tree->right);
+        printf("[%d]",tree->data);
+    }
+}
